@@ -37,6 +37,7 @@ export const createQRBill = async (frm) => {
   const language = getLanguageCode(frm.doc.language);
   const bank = await getDocument("Swiss QR Bill Settings", company);
   const bankAccount = bank.bank_account;
+  const payableTo = bank.custom_payable_to;
   const currency = getCurrency(frm.doc.currency);
   if (!currency) return;
 
@@ -58,7 +59,8 @@ export const createQRBill = async (frm) => {
   const config = generateQRConfig(
     currency,
     amount,
-    company,
+    //company,
+    payableTo,
     companyAddress,
     companyAddressCode,
     iban,
