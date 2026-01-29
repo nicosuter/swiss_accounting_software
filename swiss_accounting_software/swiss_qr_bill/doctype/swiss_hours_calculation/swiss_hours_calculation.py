@@ -281,6 +281,22 @@ def _allocated_on(employee: str, leave_type: str, as_on: str) -> float:
 	return sum(rows) if rows else 0.0
 
 
+def _newly_allocated_on(employee: str, leave_type: str, start_date: str, end_date: str) -> float:
+	"""
+	Sum of newly *approved* Leave Allocation in between from and to date.
+	"""
+	rows = frappe.get_all(
+		"Leave Allocation",
+		filters={
+			"employee": employee,
+			"leave_type": leave_type,
+			"docstatus": 1,			 # submitted only
+			"from_date" : ("between", [start_date, end_date]),
+		},
+		pluck="total_leaves_allocated",
+	)
+	return sum(rows) if rows else 0.0
+
 def _leaves_taken(employee: str, leave_type: str, from_date: str, to_date: str) -> float:
 	"""
 	Count leave days from Attendance (Half-Day = 0.5).
@@ -362,20 +378,19 @@ def get_leave_allocation_summary_attendance_based(from_date, to_date, employee):
                     to_date=day_before_window,
                 )
             )
-
-        # ----- new allocations during the window --------------------------
-        # We compute the delta between allocations effective up to to_date
-        # minus allocations effective up to the day before the window.
-        new_allocations = 0.0
-        if is_countable:
-            allocated_before = _allocated_on(employee, lt_name, day_before_window)
-            allocated_until_end = _allocated_on(employee, lt_name, to_date)
-            new_allocations = allocated_until_end - allocated_before
+		
 
         # ----- leaves consumed inside the window ---------------------------
         consumed_leaves = _leaves_taken(
             employee, lt_name, from_date=from_date, to_date=to_date
         )
+
+		# ----- new allocations during the window --------------------------
+        # We compute the delta between allocations effective up to to_date
+        # minus allocations effective up to the day before the window.
+        new_allocations = 0.0
+        if is_countable:
+            new_allocations = _newly_allocated_on(employee, lt_name, from_date, to_date)
 
         # ----- closing balance --------------------------------------------
         closing_balance = opening_balance + new_allocations - consumed_leaves
