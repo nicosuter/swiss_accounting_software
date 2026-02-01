@@ -1,0 +1,46 @@
+diff --git a/src/createqrbill.js b/src/createqrbill.js
+index 9177fed..65936bd 100644
+--- a/src/createqrbill.js
++++ b/src/createqrbill.js
+@@ -40,6 +40,8 @@ export const createQRBill = async (frm) => {
+   const currency = getCurrency(frm.doc.currency);
+   if (!currency) return;
+ 
++  const payableTo = bank.payable_to_name || company;
++
+   const companyAddress = await getDocument("Address", frm.doc.company_address);
+   const customerAddress = await getDocument(
+     "Address",
+@@ -58,7 +60,7 @@ export const createQRBill = async (frm) => {
+   const config = generateQRConfig(
+     currency,
+     amount,
+-    company,
++    payableTo,
+     companyAddress,
+     companyAddressCode,
+     iban,
+diff --git a/swiss_accounting_software/swiss_qr_bill/doctype/swiss_qr_bill_settings/swiss_qr_bill_settings.json b/swiss_accounting_software/swiss_qr_bill/doctype/swiss_qr_bill_settings/swiss_qr_bill_settings.json
+index 6db6fd2..313797b 100644
+--- a/swiss_accounting_software/swiss_qr_bill/doctype/swiss_qr_bill_settings/swiss_qr_bill_settings.json
++++ b/swiss_accounting_software/swiss_qr_bill/doctype/swiss_qr_bill_settings/swiss_qr_bill_settings.json
+@@ -7,6 +7,7 @@
+  "engine": "InnoDB",
+  "field_order": [
+   "company",
++  "payable_to_name",
+   "qr_code_type",
+   "bank_account",
+   "assign_unreconciled_transactions_to",
+@@ -22,6 +23,11 @@
+    "reqd": 1,
+    "unique": 1
+   },
++  {
++   "fieldname": "payable_to_name",
++   "fieldtype": "Data",
++   "label": "Payable to Name"
++  },
+   {
+    "fieldname": "qr_code_type",
+    "fieldtype": "Select",

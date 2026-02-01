@@ -40,6 +40,8 @@ export const createQRBill = async (frm) => {
   const currency = getCurrency(frm.doc.currency);
   if (!currency) return;
 
+  const payableTo = bank.payable_to_name || company;
+
   const companyAddress = await getDocument("Address", frm.doc.company_address);
   const customerAddress = await getDocument(
     "Address",
@@ -58,7 +60,7 @@ export const createQRBill = async (frm) => {
   const config = generateQRConfig(
     currency,
     amount,
-    company,
+    payableTo,
     companyAddress,
     companyAddressCode,
     iban,
