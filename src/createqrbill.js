@@ -60,7 +60,7 @@ export const createQRBill = async (frm) => {
   const config = generateQRConfig(
     currency,
     amount,
-    payableTo,
+    "Test",
     companyAddress,
     companyAddressCode,
     iban,

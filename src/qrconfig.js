@@ -27,7 +27,7 @@ MERCHANTABLITY OR NON-INFRINGEMENT.
 export const generateQRConfig = (
   currency,
   amount,
-  company,
+  creditorName,
   companyAddress,
   companyAddressCode,
   iban,
@@ -40,7 +40,7 @@ export const generateQRConfig = (
   amount,
   reference,
   creditor: {
-    name: company, //
+    name: creditorName.substring(0, 70), //
     address: companyAddress.address_line1.substring(0, 70),
     buildingNumber: companyAddress.address_line2 != null ? companyAddress.address_line2.substring(0,16) : undefined, // Optional Address line2, according to Type "S" specification
     zip: parseInt(companyAddress.pincode), // Bank Account  Code
